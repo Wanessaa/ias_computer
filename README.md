@@ -49,8 +49,8 @@ subgraph "Execution Cycle"
         STOR_MXL1("MBR ← M(MAR)")
         STOR_MXL2("MBR(8:19) ← AC(28:39)")
         STOR_MXL3("M(MAR) ← MBR")
-        STOR_MXL1 --> STOR_MXL2
-        STOR_MXL2 --> STOR_MXL3
+        STOR_MXL1 ----> STOR_MXL2
+        STOR_MXL2 ----> STOR_MXL3
     end
 
     DECODE_A --> |"STOR M(X, 28:39)
@@ -60,30 +60,30 @@ subgraph "Execution Cycle"
         STOR_MXR1("MBR ← M(MAR)")
         STOR_MXR2("MBR(28:39) ← AC(28:39)")
         STOR_MXR3("M(MAR) ← MBR")
-        STOR_MXR1 --> STOR_MXR2
-        STOR_MXR2 --> STOR_MXR3
+        STOR_MXR1 ----> STOR_MXR2
+        STOR_MXR2 ----> STOR_MXR3
     end
 
-    DECODE_A ---> |"JUMP M(X, 0:19)
+    DECODE_A --> |"JUMP M(X, 0:19)
     (opcode: 00001101)"|JUMP_ML
     subgraph JUMP_ML ["JUMP M(X, 0:19)"]
 %% A instrução "jump" permite que um programa salte para uma nova instrução na memória. Ela acessa uma palavra de memória de 40 bits armazenada em M(X), contendo duas instruções, mas sempre executa a instrução de endereço esquerda. O que significa que esse endereço de memória M(8:19) é copiado para o PC, forçando-o a ser a próxima instrução a ser lida no ciclo de busca.
 	JUMP_MXL1("MAR ← MBR(8:19)")
         JUMP_MXL2("PC ← MAR")     
-        JUMP_MXL1 ---> JUMP_MXL2
+        JUMP_MXL1 ----> JUMP_MXL2
     end
 
-    DECODE_A ---> |"JUMP M(X, 20:39)
+    DECODE_A --> |"JUMP M(X, 20:39)
     (opcode: 00001110)"|JUMP_MR
     subgraph JUMP_MR ["JUMP M(X, 20:39)"]
 %% A instrução "jump" permite que um programa salte para uma nova instrução na memória. Ela acessa uma palavra de memória de 40 bits armazenada em M(X), contendo duas instruções, mas sempre executa a instrução de endereço direita. O que significa que esse endereço de memória M(28:39) é copiado para o PC, forçando-o a ser a próxima instrução a ser lida no ciclo de busca. 
         JUMP_MXR1("MAR ← MBR(28:39)")
         JUMP_MXR2("PC ← MAR")
-        JUMP_MXR1 ---> JUMP_MXR2
+        JUMP_MXR1 ----> JUMP_MXR2
     end
 
 
-   DECODE_A ---> |"JUMP+ M(X, 0:19)
+   DECODE_A --> |"JUMP+ M(X, 0:19)
     (opcode: 00001111)"|JUMP+_ML
     subgraph JUMP+_ML ["JUMP+ M(X, 0:19)"]
       %% <!-- A instrução JUMP+ M(X, 0:19) tem o efeito de saltar para a instrução esquerda da memória apenas se o valor contido no registrador AC for maior ou igual a zero, indicando que AC não é um número negativo. Caso contrário, se o valor em AC for negativo, o fluxo de execução continua normalmente, seguindo para a instrução subsequente à instrução JUMP+.  -->
@@ -93,7 +93,7 @@ subgraph "Execution Cycle"
         
     end
 
-    DECODE_A ---> |"JUMP+ M(X, 20:39)
+    DECODE_A --> |"JUMP+ M(X, 20:39)
     (opcode: 00010000)"|JUMP+_MR
     subgraph JUMP+_MR ["JUMP+ M(X, 20:39)"]
    %% <!-- A instrução JUMP+ M(X, 20:39) tem o efeito de saltar para a instrução direita da memória apenas se o valor contido no registrador AC for maior ou igual a zero, indicando que AC não é um número negativo. Caso contrário, se o valor em AC for negativo, o fluxo de execução continua normalmente, seguindo para a instrução subsequente à instrução JUMP+.  -->
@@ -105,19 +105,24 @@ subgraph "Execution Cycle"
 
 end
 
-subgraph END_S ["End"]
+subgraph END 
     END(("Go back
     to Start")):::greenClass
 
-    STOR_MXL --> END
-    STOR_MXR  --> END
-    JUMP_ML --> END
-    JUMP_MR --> END
-    JUMP1_MXL1 ---> |No| END
+    STOR_MXL ---> END
+    STOR_MXR  ---> END
+    JUMP_ML ---> END
+    JUMP_MR ---> END
     JUMP1_MXL3 ---> END
-    JUMP1_MXR1 ---> |No| END
     JUMP1_MXR3 ---> END
-    
+    JUMP1_MXR1 ---> |"No
+
+    Execute the 
+    next instruction"| END
+    JUMP1_MXL1 ---> |"No
+
+    Execute the 
+    next instruction"|END
 end
 
 style END_S fill:transparent,stroke:transparent
