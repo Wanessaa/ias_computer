@@ -90,11 +90,7 @@ subgraph "Execution Cycle"
         JUMP1_MXL1{"AC>= 0"}
         JUMP1_MXL1 --> |Yes| JUMP1_MXL2("MAR ← MBR(8:19)")
         JUMP1_MXL2 -->  JUMP1_MXL3("PC ← MAR") 
-        JUMP1_MXL1 --> |"No 
         
-        Execute the 
-        next instruction" | JUMP1_MXL4(" MAR ← PC")
-        JUMP1_MXL3 --> JUMP1_MXL4
     end
 
     DECODE_A ---> |"JUMP+ M(X, 20:39)
@@ -104,11 +100,6 @@ subgraph "Execution Cycle"
         JUMP1_MXR1{"AC>= 0"}
         JUMP1_MXR1 --> |Yes| JUMP1_MXR2("MAR ← MBR(28:39)")
         JUMP1_MXR2 -->  JUMP1_MXR3("PC ← MAR")
-        JUMP1_MXR1 --> |"No 
-        
-        Execute the 
-        next instruction" | JUMP1_MXR4(" MAR ← PC")
-        JUMP1_MXR3 --> JUMP1_MXR4
 
     end
 
@@ -122,8 +113,10 @@ subgraph END_S ["End"]
     STOR_MXR  --> END
     JUMP_ML --> END
     JUMP_MR --> END
-    JUMP+_ML ---> END
-    JUMP+_MR ---> END
+    JUMP1_MXL1 ---> |No| END
+    JUMP1_MXL3 ---> END
+    JUMP1_MXR1 ---> |No| END
+    JUMP1_MXR3 ---> END
     
 end
 
